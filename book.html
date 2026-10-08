@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web бағдарламалау кітабы</title>
+
+<style>
+
+/* =========================
+   НЕГІЗГІ БӨЛІМ
+========================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #071a36, #174b7a);
+    min-height: 100vh;
+    color: #222;
+}
+
+
+/* =========================
+   СЫРТҚЫ МҰҚАБА
+========================= */
+
+.cover {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: linear-gradient(135deg, #06152e, #174b7a);
+
+    transition: 0.8s;
+}
+
+.cover.hide {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(1.08);
+}
+
+.cover-card {
+    width: 500px;
+    height: 650px;
+
+    background: linear-gradient(145deg, #0c477f, #061b38);
+
+    border: 3px solid #5d91bd;
+    border-radius: 15px;
+
+    box-shadow: 0 30px 80px rgba(0,0,0,.6);
+
+    color: white;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+
+    text-align: center;
+    padding: 35px;
+}
+
+.cover-card h1 {
+    font-size: 38px;
+    letter-spacing: 2px;
+}
+
+.cover-card h2 {
+    font-size: 30px;
+}
+
+.photo {
+    width: 180px;
+    height: 180px;
+
+    border-radius: 50%;
+    object-fit: cover;
+
+    border: 5px solid white;
+}
+
+.author {
+    font-size: 23px;
+    font-weight: bold;
+}
+
+.course {
+    color: #c8e4ff;
+    margin-top: 7px;
+}
+
+#openBook {
+    border: none;
+    padding: 15px 35px;
+
+    border-radius: 30px;
+
+    background: white;
+    color: #123d6b;
+
+    font-size: 18px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: .3s;
+}
+
+#openBook:hover {
+    transform: scale(1.08);
+}
+
+
+/* =========================
+   МӘЗІР
+========================= */
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+
+    width: 230px;
+    height: 100vh;
+
+    background: #061a32;
+    color: white;
+
+    padding: 25px 15px;
+
+    z-index: 20;
+}
+
+.sidebar h2 {
+    text-align: center;
+    color: #a9d6ff;
+    margin-bottom: 25px;
+}
+
+.sidebar ul {
+    list-style: none;
+}
+
+.sidebar li {
+    padding: 13px;
+    margin-bottom: 7px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    transition: .3s;
+}
+
+.sidebar li:hover,
+.sidebar li.active {
+    background: #205d91;
+}
+
+
+/* =========================
+   НЕГІЗГІ БӨЛІМ
+========================= */
+
+.main {
+    margin-left: 230px;
+    padding: 30px;
+}
+
+.title {
+    text-align: center;
+    color: white;
+    margin-bottom: 25px;
+}
+
+.title h1 {
+    font-size: 32px;
+}
+
+.title p {
+    margin-top: 8px;
+    color: #c8e4ff;
+}
+
+
+/* =========================
+   КІТАП
+========================= */
+
+.book-wrapper {
+    display: flex;
+    justify-content: center;
+
+    perspective: 2500px;
+}
+
+.book {
+    width: 1100px;
+    max-width: 95vw;
+    height: 650px;
+
+    position: relative;
+
+    display: flex;
+
+    box-shadow: 0 30px 70px rgba(0,0,0,.55);
+
+    transform-style: preserve-3d;
+}
+
+
+/* Сол жақ тұрақты бет */
+
+.left-page {
+    width: 50%;
+    height: 650px;
+
+    padding: 45px;
+
+    background: linear-gradient(
+        to right,
+        #f0e4c8,
+        #fffdf4
+    );
+
+    border-radius: 12px 0 0 12px;
+
+    overflow-y: auto;
+
+    border-right: 1px solid #cdbf9f;
+
+    position: relative;
+}
+
+
+/* Оң жақ бет */
+
+.right-page {
+    width: 50%;
+    height: 650px;
+
+    padding: 45px;
+
+    background: linear-gradient(
+        to left,
+        #f0e4c8,
+        #fffdf4
+    );
+
+    border-radius: 0 12px 12px 0;
+
+    overflow-y: auto;
+
+    position: relative;
+}
+
+
+/* =========================
+   АЙНАЛАТЫН НАҚТЫ ПАРАҚ
+========================= */
+
+.turning-page {
+    position: absolute;
+
+    top: 0;
+    left: 50%;
+
+    width: 50%;
+    height: 650px;
+
+    background: #fffdf4;
+
+    padding: 45px;
+
+    transform-origin: left center;
+
+    transform-style: preserve-3d;
+
+    z-index: 50;
+
+    border-radius: 0 12px 12px 0;
+
+    box-shadow:
+        -8px 0 20px rgba(0,0,0,.15);
+
+    overflow: hidden;
+
+    backface-visibility: hidden;
+}
+
+
+/* Беттің артқы жағы */
+
+.turning-back {
+    position: absolute;
+
+    inset: 0;
+
+    padding: 45px;
+
+    background:
+        linear-gradient(
+            to left,
+            #f0e4c8,
+            #fffdf4
+        );
+
+    transform: rotateY(180deg);
+
+    backface-visibility: hidden;
+
+    overflow: hidden;
+}
+
+
+/* КЕЛЕСІ БЕТ */
+
+.turn-next {
+    animation:
+        turnNext 1.2s ease-in-out forwards;
+}
+
+@keyframes turnNext {
+
+    0% {
+        transform: rotateY(0deg);
+    }
+
+    100% {
+        transform: rotateY(-180deg);
+    }
+
+}
+
+
+/* АЛДЫҢҒЫ БЕТ */
+
+.turn-prev {
+    transform-origin: right center;
+    left: 0;
+
+    border-radius: 12px 0 0 12px;
+
+    animation:
+        turnPrev 1.2s ease-in-out forwards;
+}
+
+@keyframes turnPrev {
+
+    0% {
+        transform: rotateY(0deg);
+    }
+
+    100% {
+        transform: rotateY(180deg);
+    }
+
+}
+
+
+/* =========================
+   БЕТТЕРДІҢ ДИЗАЙНЫ
+========================= */
+
+.page-content h2 {
+    color: #174b7a;
+
+    font-size: 30px;
+
+    margin-bottom: 20px;
+
+    padding-bottom: 10px;
+
+    border-bottom: 2px solid #174b7a;
+}
+
+.page-content h3 {
+    color: #245e8e;
+
+    margin: 18px 0 10px;
+}
+
+.page-content p {
+    font-size: 17px;
+
+    line-height: 1.7;
+
+    margin-bottom: 14px;
+}
+
+.page-content ul {
+    margin-left: 25px;
+
+    line-height: 2;
+
+    font-size: 17px;
+}
+
+.code {
+    background: #17202a;
+
+    color: #e8f4ff;
+
+    padding: 18px;
+
+    border-radius: 8px;
+
+    font-family: Consolas, monospace;
+
+    white-space: pre-wrap;
+
+    line-height: 1.5;
+
+    margin: 15px 0;
+}
+
+
+/* =========================
+   АҚПАРАТ
+========================= */
+
+.info {
+    text-align: center;
+
+    color: #d9edff;
+
+    margin-top: 18px;
+}
+
+
+/* =========================
+   ТЕЛЕФОН
+========================= */
+
+@media(max-width: 900px) {
+
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+
+    .main {
+        margin-left: 0;
+    }
+
+    .sidebar ul {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .sidebar li {
+        margin: 4px;
+    }
+
+    .book {
+        height: 550px;
+    }
+
+    .left-page,
+    .right-page,
+    .turning-page {
+        height: 550px;
+        padding: 25px;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     СЫРТҚЫ МҰҚАБА
+========================= -->
+
+<div class="cover" id="cover">
+
+    <div class="cover-card">
+
+        <div>
+            <h1>WEB</h1>
+            <h2>БАҒДАРЛАМАЛАУ</h2>
+        </div>
+
+        <img
+            src="myphoto.jpg.jpeg"
+            class="photo"
+            alt="Автор"
+        >
+
+        <div>
+            <div class="author">
+                Нұрмұхамбет Абдурахман
+            </div>
+
+            <div class="course">
+                3 курс студенті
+            </div>
+        </div>
+
+        <button id="openBook">
+            📖 Кітапты ашу
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================
+     МӘЗІР
+========================= -->
+
+<aside class="sidebar">
+
+    <h2>📚 Мазмұны</h2>
+
+    <ul>
+
+        <li data-page="1">
+            🏠 Басты бет
+        </li>
+
+        <li data-page="2">
+            📋 Мазмұны
+        </li>
+
+        <li data-page="3">
+            💻 HTML
+        </li>
+
+        <li data-page="4">
+            🎨 CSS
+        </li>
+
+        <li data-page="5">
+            ⚙️ JavaScript
+        </li>
+
+        <li data-page="6">
+            🔄 DHTML
+        </li>
+
+        <li data-page="7">
+            📝 Қорытынды
+        </li>
+
+        <li data-page="8">
+            👤 Автор
+        </li>
+
+    </ul>
+
+</aside>
+
+
+
+<!-- =========================
+     НЕГІЗГІ БӨЛІМ
+========================= -->
+
+<main class="main">
+
+    <div class="title">
+
+        <h1>
+            Web бағдарламалау кітабы
+        </h1>
+
+        <p>
+            HTML + CSS + JavaScript
+        </p>
+
+    </div>
+
+
+    <div class="book-wrapper">
+
+        <div class="book" id="book">
+
+            <!-- Сол жақ бет -->
+
+            <div
+                class="left-page page-content"
+                id="leftPage">
+            </div>
+
+
+            <!-- Оң жақ бет -->
+
+            <div
+                class="right-page page-content"
+                id="rightPage">
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        ← Сол жаққа басу — артқа |
+        Оң жаққа басу — алға →
+
+    </div>
+
+</main>
+
+
+
+<script>
+
+/* ==================================================
+   БЕТТЕР
+================================================== */
+
+const pages = [
+
+    {
+        title: "Web бағдарламалау",
+        text: `
+            <p>
+                Web бағдарламалау — интернетте жұмыс
+                істейтін сайттар мен веб-қосымшаларды
+                жасау саласы.
+            </p>
+
+            <h3>Негізгі технологиялар</h3>
+
+            <ul>
+                <li>HTML — құрылым</li>
+                <li>CSS — дизайн</li>
+                <li>JavaScript — интерактивтілік</li>
+            </ul>
+        `
+    },
+
+
+    {
+        title: "Кітап туралы",
+        text: `
+            <p>
+                Бұл электрондық кітап Web бағдарламалаудың
+                негізгі технологияларына арналған.
+            </p>
+
+            <p>
+                Кітаптың беттері JavaScript арқылы
+                басқарылады, ал CSS арқылы 3D
+                бет айналу эффектісі жасалады.
+            </p>
+
+            <h3>Жобаның мақсаты</h3>
+
+            <p>
+                HTML, CSS және JavaScript технологияларын
+                бір жобада көрсету.
+            </p>
+        `
+    },
+
+
+    {
+        title: "Мазмұны",
+        text: `
+            <ul>
+                <li>Web бағдарламалау</li>
+                <li>HTML</li>
+                <li>CSS</li>
+                <li>JavaScript</li>
+                <li>DHTML</li>
+                <li>Қорытынды</li>
+                <li>Автор</li>
+            </ul>
+        `
+    },
+
+
+    {
+        title: "HTML",
+        text: `
+            <p>
+                HTML — HyperText Markup Language.
+                Ол веб-беттің негізгі құрылымын жасайды.
+            </p>
+
+            <h3>HTML көмегімен:</h3>
+
+            <ul>
+                <li>мәтін</li>
+                <li>тақырып</li>
+                <li>сурет</li>
+                <li>кесте</li>
+                <li>форма</li>
+                <li>батырма</li>
+            </ul>
+        `
+    },
+
+
+    {
+        title: "HTML коды",
+        text: `
+            <div class="code">
+&lt;h1&gt;Менің сайтым&lt;/h1&gt;
+
+&lt;p&gt;
+Web бағдарламалау
+&lt;/p&gt;
+
+&lt;button&gt;
+Басу
+&lt;/button&gt;
+            </div>
+
+            <p>
+                HTML тегтері браузерге веб-беттің
+                құрылымын түсіндіреді.
+            </p>
+        `
+    },
+
+
+    {
+        title: "CSS",
+        text: `
+            <p>
+                CSS — веб-беттің сыртқы көрінісін
+                басқаруға арналған стильдер тілі.
+            </p>
+
+            <h3>CSS арқылы:</h3>
+
+            <ul>
+                <li>түстерді өзгертуге</li>
+                <li>өлшемдерді орнатуға</li>
+                <li>элементтерді орналастыруға</li>
+                <li>анимация жасауға болады</li>
+            </ul>
+        `
+    },
+
+
+    {
+        title: "CSS мысалы",
+        text: `
+            <div class="code">
+body {
+    background: #174b7a;
+    color: white;
+}
+
+h1 {
+    text-align: center;
+}
+            </div>
+
+            <p>
+                Осы кітаптың дизайны мен 3D
+                бет айналу эффектісі CSS арқылы жасалған.
+            </p>
+        `
+    },
+
+
+    {
+        title: "JavaScript",
+        text: `
+            <p>
+                JavaScript — веб-бетті интерактивті
+                ететін бағдарламалау тілі.
+            </p>
+
+            <h3>Бұл жобада JavaScript:</h3>
+
+            <ul>
+                <li>кітапты ашады</li>
+                <li>беттерді ауыстырады</li>
+                <li>3D анимацияны іске қосады</li>
+                <li>мәзірді басқарады</li>
+            </ul>
+        `
+    },
+
+
+    {
+        title: "JavaScript коды",
+        text: `
+            <div class="code">
+function nextPage() {
+    currentPage++;
+    showPage();
+}
+
+function previousPage() {
+    currentPage--;
+    showPage();
+}
+            </div>
+
+            <p>
+                JavaScript пайдаланушының әрекетіне
+                байланысты кітаптың беттерін басқарады.
+            </p>
+        `
+    },
+
+
+    {
+        title: "DHTML",
+        text: `
+            <p>
+                DHTML — HTML, CSS және JavaScript
+                технологияларының бірігуі.
+            </p>
+
+            <h3>DHTML құрамына:</h3>
+
+            <ul>
+                <li>HTML</li>
+                <li>CSS</li>
+                <li>JavaScript</li>
+                <li>DOM</li>
+            </ul>
+        `
+    },
+
+
+    {
+        title: "Интерактивтілік",
+        text: `
+            <p>
+                Бұл электрондық кітап интерактивті
+                веб-жоба ретінде жасалды.
+            </p>
+
+            <div class="code">
+Клик
+  ↓
+JavaScript
+  ↓
+Бет ауысады
+  ↓
+CSS 3D анимациясы
+            </div>
+        `
+    },
+
+
+    {
+        title: "Қорытынды",
+        text: `
+            <p>
+                Web бағдарламалау қазіргі ақпараттық
+                технологиялардың маңызды бағыттарының бірі.
+            </p>
+
+            <p>
+                HTML құрылымды жасайды, CSS дизайнды
+                басқарады, ал JavaScript интерактивтілік
+                қосады.
+            </p>
+        `
+    },
+
+
+    {
+        title: "Нәтиже",
+        text: `
+            <p>
+                Осы жоба барысында HTML, CSS және
+                JavaScript технологиялары біріктірілді.
+            </p>
+
+            <p>
+                Нәтижесінде интерактивті электрондық
+                Web бағдарламалау кітабы жасалды.
+            </p>
+        `
+    },
+
+
+    {
+        title: "Автор",
+        text: `
+            <p>
+                <b>Аты-жөні:</b>
+                Нұрмұхамбет Абдурахман
+            </p>
+
+            <p>
+                <b>Курс:</b>
+                3 курс студенті
+            </p>
+
+            <p>
+                <b>Бағыты:</b>
+                Ақпараттық технологиялар
+            </p>
+        `
+    },
+
+
+    {
+        title: "Автор туралы",
+        text: `
+            <p>
+                Автор Web бағдарламалау технологияларын
+                үйреніп, HTML, CSS және JavaScript
+                арқылы веб-жобалар жасаумен айналысады.
+            </p>
+
+            <h3>Жобаның мақсаты</h3>
+
+            <p>
+                Web бағдарламалау туралы негізгі
+                түсініктерді электрондық кітап
+                түрінде көрсету.
+            </p>
+        `
+    }
+
+];
+
+
+/* ==================================================
+   ҚАЗІРГІ ЖАҒДАЙ
+================================================== */
+
+let currentSpread = 0;
+
+let flipping = false;
+
+
+/* ==================================================
+   БЕТТІ КӨРСЕТУ
+================================================== */
+
+function showSpread() {
+
+    const leftIndex = currentSpread * 2;
+
+    const rightIndex = leftIndex + 1;
+
+
+    document.getElementById("leftPage").innerHTML = `
+
+        <div class="page-content">
+
+            <h2>
+                ${pages[leftIndex].title}
+            </h2>
+
+            ${pages[leftIndex].text}
+
+        </div>
+    `;
+
+
+    document.getElementById("rightPage").innerHTML = `
+
+        <div class="page-content">
+
+            <h2>
+                ${pages[rightIndex].title}
+            </h2>
+
+            ${pages[rightIndex].text}
+
+        </div>
+    `;
+
+
+    /* Мәзір */
+
+    document.querySelectorAll(".sidebar li")
+        .forEach(item => {
+
+            item.classList.remove("active");
+
+        });
+
+}
+
+
+/* ==================================================
+   КЕЛЕСІ БЕТ
+================================================== */
+
+function nextSpread() {
+
+    if (flipping) return;
+
+    if (currentSpread >= 7) return;
+
+    flipping = true;
+
+
+    const oldRight =
+        document.getElementById("rightPage");
+
+
+    const turning =
+        document.createElement("div");
+
+
+    turning.className =
+        "turning-page turn-next";
+
+
+    turning.innerHTML = `
+
+        <div class="page-content">
+
+            <h2>
+                ${pages[currentSpread * 2 + 1].title}
+            </h2>
+
+            ${pages[currentSpread * 2 + 1].text}
+
+        </div>
+
+        <div class="turning-back">
+
+            <div class="page-content">
+
+                <h2>
+                    ${pages[currentSpread * 2 + 2].title}
+                </h2>
+
+                ${pages[currentSpread * 2 + 2].text}
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    document
+        .getElementById("book")
+        .appendChild(turning);
+
+
+    setTimeout(() => {
+
+        currentSpread++;
+
+        showSpread();
+
+    }, 600);
+
+
+    setTimeout(() => {
+
+        turning.remove();
+
+        flipping = false;
+
+    }, 1200);
+
+}
+
+
+/* ==================================================
+   АЛДЫҢҒЫ БЕТ
+================================================== */
+
+function previousSpread() {
+
+    if (flipping) return;
+
+    if (currentSpread <= 0) {
+
+        document
+            .getElementById("cover")
+            .classList.remove("hide");
+
+        return;
+    }
+
+
+    flipping = true;
+
+
+    const turning =
+        document.createElement("div");
+
+
+    turning.className =
+        "turning-page turn-prev";
+
+
+    turning.innerHTML = `
+
+        <div class="page-content">
+
+            <h2>
+                ${pages[currentSpread * 2].title}
+            </h2>
+
+            ${pages[currentSpread * 2].text}
+
+        </div>
+
+        <div class="turning-back">
+
+            <div class="page-content">
+
+                <h2>
+                    ${pages[currentSpread * 2 - 1].title}
+                </h2>
+
+                ${pages[currentSpread * 2 - 1].text}
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    document
+        .getElementById("book")
+        .appendChild(turning);
+
+
+    setTimeout(() => {
+
+        currentSpread--;
+
+        showSpread();
+
+    }, 600);
+
+
+    setTimeout(() => {
+
+        turning.remove();
+
+        flipping = false;
+
+    }, 1200);
+
+}
+
+
+/* ==================================================
+   ОҢ ЖАҚ БЕТКЕ БАСУ
+================================================== */
+
+document
+    .getElementById("rightPage")
+    .addEventListener(
+        "click",
+        nextSpread
+    );
+
+
+/* ==================================================
+   СОЛ ЖАҚ БЕТКЕ БАСУ
+================================================== */
+
+document
+    .getElementById("leftPage")
+    .addEventListener(
+        "click",
+        previousSpread
+    );
+
+
+/* ==================================================
+   КІТАПТЫ АШУ
+================================================== */
+
+document
+    .getElementById("openBook")
+    .addEventListener(
+        "click",
+        function() {
+
+            document
+                .getElementById("cover")
+                .classList.add("hide");
+
+        }
+    );
+
+
+/* ==================================================
+   МӘЗІР
+================================================== */
+
+document
+    .querySelectorAll(".sidebar li")
+    .forEach(item => {
+
+        item.addEventListener(
+            "click",
+            function() {
+
+                const page =
+                    Number(
+                        this.dataset.page
+                    );
+
+                currentSpread =
+                    Math.floor(
+                        (page - 1) / 2
+                    );
+
+                showSpread();
+
+            }
+        );
+
+    });
+
+
+/* ==================================================
+   БАСТАПҚЫ БЕТ
+================================================== */
+
+showSpread();
+
+</script>
+
+</body>
+</html>
